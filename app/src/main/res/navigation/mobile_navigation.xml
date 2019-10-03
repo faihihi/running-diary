@@ -22,4 +22,10 @@
         android:name="au.edu.sydney.comp5216.running_diary.ui.runninglog.RunningLogFragment"
         android:label="@string/title_log"
         tools:layout="@layout/fragment_runninglog" />
+
+    <fragment
+        android:id="@+id/navigation_music"
+        android:name="au.edu.sydney.comp5216.running_diary.ui.music.MusicPlayerFragment"
+        android:label="@string/title_music"
+        tools:layout="@layout/fragment_music" />
 </navigation>

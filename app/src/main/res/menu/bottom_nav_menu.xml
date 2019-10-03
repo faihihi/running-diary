@@ -16,4 +16,9 @@
         android:icon="@drawable/calendar"
         android:title="@string/title_log" />
 
+    <item
+        android:id="@+id/navigation_music"
+        android:icon="@drawable/music_player"
+        android:title="@string/title_music" />
+
 </menu>

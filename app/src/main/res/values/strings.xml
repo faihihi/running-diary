@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">running-diary</string>
-    <string name="title_pace">Pace Calculator</string>
+    <string name="title_pace">Calculator</string>
     <string name="title_tracker">GPS Tracker</string>
     <string name="title_log">Running Log</string>
+    <string name="title_music">Music Player</string>
 </resources>
