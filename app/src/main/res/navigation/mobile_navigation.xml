@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_pace">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="au.edu.sydney.comp5216.running_diary.ui.pacecalculator.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_pace"
+        android:name="au.edu.sydney.comp5216.running_diary.ui.pacecalculator.PaceCalculatorFragment"
+        android:label="@string/title_pace"
+        tools:layout="@layout/fragment_pacecalculator" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_tracker"
         android:name="au.edu.sydney.comp5216.running_diary.ui.gpstracker.GpsTrackerFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_tracker"
         tools:layout="@layout/fragment_gpstracker" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="au.edu.sydney.comp5216.running_diary.ui.runninglog.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_log"
+        android:name="au.edu.sydney.comp5216.running_diary.ui.runninglog.RunningLogFragment"
+        android:label="@string/title_log"
+        tools:layout="@layout/fragment_runninglog" />
 </navigation>
