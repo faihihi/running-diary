@@ -1,19 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
 
     <TextView
-        android:id="@+id/text_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Distance" />
+
+    <EditText
+        android:id="@+id/distance_input"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="20dp"
+        android:hint="Kilometer"
+        android:inputType="number"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Time" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/hour_input"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:hint="hh"
+            android:inputType="number"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/min_input"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:hint="mm"
+            android:inputType="number"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/sec_input"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:hint="ss"
+            android:inputType="number"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pace_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:text="Pace" />
+
+    <LinearLayout
+        android:id="@+id/pace_result"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:paddingTop="25dp">
+
+        <TextView
+            android:id="@+id/hour_pace"
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:hint="hh"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/min_pace"
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:hint="mm"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/sec_pace"
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:hint="ss"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="85dp"
+            android:layout_height="match_parent"
+            android:hint="per km"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/calculate_pace"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Calculate Pace"
+        android:background="@color/colorPrimary"
+        android:textColor="#ffffff"
+        android:textAlignment="center" />
+
+
+
+
+
+</LinearLayout>
