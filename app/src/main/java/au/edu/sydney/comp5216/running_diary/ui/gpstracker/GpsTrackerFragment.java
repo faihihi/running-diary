@@ -11,11 +11,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -38,13 +41,23 @@ import au.edu.sydney.comp5216.running_diary.R;
 import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
-public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, LocationListener {
+public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, LocationListener,View.OnClickListener {
 
     private GpsTrackerViewModel gpsTrackerViewModel;
     private GoogleMap mMap;
     LocationManager locationManager;
     MarkerOptions mo;
     Marker marker;
+    boolean previousLocation, reset_check, pause_check;
+    Location loc1, loc2;
+    Double initial_lat, initial_lng;
+    float distanceInMeters, paused_distance;
+    TextView distance_view;
+
+    private Chronometer chronometer;
+    private boolean running;
+    private long pauseOffset;
+    Button start, stop, reset;
 
     final static int PERMISSION_ALL = 1;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
@@ -58,15 +71,13 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager()
-//                .findFragmentById(R.id.gpsmap);
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.gpsmap);
         mapFragment.getMapAsync(this);
 
         locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
         mo = new MarkerOptions().position(new LatLng(0,0)).title("My Current Location");
-//
+
         if(Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()){
             requestPermissions(PERMISSIONS, PERMISSION_ALL);
         } else{
@@ -77,31 +88,70 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             showAlert(1);
         }
 
+        start = (Button) root.findViewById(R.id.start_btn);
+        stop = (Button) root.findViewById(R.id.stop_btn);
+        reset = (Button) root.findViewById(R.id.reset_btn);
+        start.setOnClickListener(this);
+        stop.setOnClickListener(this);
+        reset.setOnClickListener(this);
+
+        distance_view = (TextView) root.findViewById(R.id.distance_view);
+
+        chronometer = (Chronometer) root.findViewById(R.id.chronometer);
+
+        loc1 = new Location("");
+        loc2 = new Location("");
+        reset_check = true;
+
         return root;
     }
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.fragment_gpstracker);
-//        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.gpsmap);
-//        mapFragment.getMapAsync(this);
-//
-//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        mo = new MarkerOptions().position(new LatLng(0,0)).title("My Current Location");
-//
-//        if(Build.VERSION.SDK_INT >= 23 && !isPermissionGranted()){
-//            requestPermissions(PERMISSIONS, PERMISSION_ALL);
-//        } else{
-//            requestLocation();
-//        }
-//
-//        if(!isLocationEnabled()){
-//            showAlert(1);
-//        }
-//    }
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.start_btn:
+                if(!running){
+                    chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+                    chronometer.start();
+                    running = true;
+
+                    if(reset_check){
+                        distanceInMeters = 0;
+                        distance_view.setText("0");
+                        distance_view.setVisibility(View.VISIBLE);
+                        reset_check = false;
+                    }
+                    paused_distance = 0;
+                    pause_check = false;
+                }
+                break;
+
+            case R.id.stop_btn:
+                if(running){
+                    chronometer.stop();
+                    pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+                    running = false;
+
+                    reset_check = false;
+                    paused_distance = distanceInMeters;
+                    pause_check = true;
+                }
+                break;
+            case R.id.reset_btn:
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                pauseOffset = 0;
+
+                distanceInMeters = 0;
+                distance_view.setText("0");
+                paused_distance = 0;
+                pause_check = true;
+                reset_check = true;
+                break;
+
+            default:
+                break;
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -128,6 +178,27 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
 
     @Override
     public void onLocationChanged(Location location) {
+        if(location != null){
+            if(!previousLocation){
+                loc1.setLatitude(location.getLatitude());
+                loc1.setLongitude(location.getLongitude());
+
+                distanceInMeters = 0;
+                previousLocation = true;
+            } else if(pause_check){
+                distance_view.setText(Float.toString(paused_distance));
+            } else{
+                loc1.setLatitude(loc2.getLatitude());
+                loc1.setLongitude(loc2.getLongitude());
+
+                loc2.setLatitude(location.getLatitude());
+                loc2.setLongitude(location.getLongitude());
+
+                distanceInMeters = distanceInMeters + (loc1.distanceTo(loc2)/1000);
+                distance_view.setText(Float.toString(distanceInMeters));
+            }
+        }
+
         LatLng myCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
         marker.setPosition(myCoordinates);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myCoordinates));
@@ -154,8 +225,9 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setPowerRequirement(Criteria.POWER_HIGH);
 
+
         String provider = locationManager.getBestProvider(criteria,true);
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
+        locationManager.requestLocationUpdates(provider, 5000, 10, this);
     }
 
     private boolean isLocationEnabled(){
@@ -206,4 +278,6 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 });
         dialog.show();
     }
+
+
 }
