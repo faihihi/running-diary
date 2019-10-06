@@ -10,7 +10,7 @@ public class RunningLogViewModel extends ViewModel {
 
     public RunningLogViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is Running Log fragment");
+        mText.setValue("This is Running LogItem fragment");
     }
 
     public LiveData<String> getText() {

@@ -12,11 +12,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.util.ArrayList;
+
+import au.edu.sydney.comp5216.running_diary.LogItem;
 import au.edu.sydney.comp5216.running_diary.R;
 
 public class RunningLogFragment extends Fragment {
 
     private RunningLogViewModel runningLogViewModel;
+
+    private ArrayList<LogItem> RunningLogArray;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

@@ -1,6 +1,7 @@
 package au.edu.sydney.comp5216.running_diary.ui.pacecalculator;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,10 +61,8 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
         Double hr_ans = 0.0, min_ans = 0.0, sec_ans = 0.0;
 
         if(hr <= 59 && min <= 59 && sec <= 59 && dist > 0){
-            if(hr == 0){ hr = 1.0;}
-            if(min == 0){min = 1.0;}
-
             Double sec_result = (Double) ((((hr * 60) + min) * 60) + sec) / dist;
+            Log.d("Check sec_result", sec_result.toString());
 
             if(sec_result / 60 >= 60){
                 hr_ans = sec_result / 3600;
@@ -84,8 +83,8 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
             return;
         }
 
-        hour_result.setText(String.valueOf((int) Math.round(hr_ans)));
-        min_result.setText(String.valueOf((int) Math.round(min_ans)));
+        hour_result.setText(String.valueOf((int) Math.floor(hr_ans)));
+        min_result.setText(String.valueOf((int) Math.floor(min_ans)));
         sec_result.setText(String.valueOf((int) Math.round(sec_ans)));
 
         pace_text.setVisibility(View.VISIBLE);

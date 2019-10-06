@@ -2,6 +2,7 @@ package au.edu.sydney.comp5216.running_diary.ui.gpstracker;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -35,16 +37,29 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+import au.edu.sydney.comp5216.running_diary.LogItem;
 import au.edu.sydney.comp5216.running_diary.R;
+import au.edu.sydney.comp5216.running_diary.RunningLog;
+import au.edu.sydney.comp5216.running_diary.RunningLogDB;
+import au.edu.sydney.comp5216.running_diary.RunningLogDao;
+import au.edu.sydney.comp5216.running_diary.directionhelpers.FetchURL;
+import au.edu.sydney.comp5216.running_diary.directionhelpers.TaskLoadedCallback;
+import au.edu.sydney.comp5216.running_diary.ui.runninglog.RunningLogFragment;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
-public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, LocationListener,View.OnClickListener {
-
+public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, LocationListener,View.OnClickListener, TaskLoadedCallback {
     private GpsTrackerViewModel gpsTrackerViewModel;
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     LocationManager locationManager;
     MarkerOptions mo;
     Marker marker;
@@ -54,13 +69,23 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     float distanceInMeters, paused_distance;
     TextView distance_view;
 
+    public static Polyline currentPolyline;
+    MarkerOptions place1, place2;
+
     private Chronometer chronometer;
     private boolean running;
     private long pauseOffset;
-    Button start, stop, reset;
+    Button start, stop, reset, getDirection, save;
+
+    private ArrayList<LogItem> RunningLogArray;
+
+    RunningLogDB db;
+    RunningLogDao runningLogDao;
 
     final static int PERMISSION_ALL = 1;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+
+    private static Context context = null;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -68,7 +93,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         gpsTrackerViewModel =
                 ViewModelProviders.of(this).get(GpsTrackerViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gpstracker, null, false);
-
+        context = getActivity();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
@@ -88,12 +113,17 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             showAlert(1);
         }
 
+        getDirection = (Button) root.findViewById(R.id.direction_btn);
         start = (Button) root.findViewById(R.id.start_btn);
         stop = (Button) root.findViewById(R.id.stop_btn);
         reset = (Button) root.findViewById(R.id.reset_btn);
+        save = (Button) root.findViewById(R.id.save_btn);
+
+        getDirection.setOnClickListener(this);
         start.setOnClickListener(this);
         stop.setOnClickListener(this);
         reset.setOnClickListener(this);
+        save.setOnClickListener(this);
 
         distance_view = (TextView) root.findViewById(R.id.distance_view);
 
@@ -103,7 +133,27 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         loc2 = new Location("");
         reset_check = true;
 
+        db = RunningLogDB.getDatabase(getActivity().getApplicationContext());
+        runningLogDao = db.RunningLogDao();
+        readItemsFromDatabase();
+
         return root;
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode){
+        //Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        //Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        //Mode
+        String mode = "mode=" + directionMode;
+        //Build parameter to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        //Output format
+        String output = "json";
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
+
+        return url;
     }
 
     @Override
@@ -111,6 +161,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         switch (view.getId()){
             case R.id.start_btn:
                 if(!running){
+                    Log.d("Start btn","CLICKEDDDD");
                     chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                     chronometer.start();
                     running = true;
@@ -146,6 +197,26 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 paused_distance = 0;
                 pause_check = true;
                 reset_check = true;
+                break;
+
+            case R.id.direction_btn:
+                Log.d("Check if clicked","CLICKEDDDDD");
+
+                place1 = new MarkerOptions().position(new LatLng(-33.8918,151.189)).title("Location 1");
+                place2 = new MarkerOptions().position(new LatLng(-33.8834,151.194)).title("Location 2");
+
+                String url2 = getUrl(place1.getPosition(), place2.getPosition(), "driving");
+                Log.d("GET URL",url2);
+                new FetchURL(getContext()).execute(url2, "driving");
+                break;
+
+            case R.id.save_btn:
+                String time = (String) chronometer.getText();
+
+                LogItem log = new LogItem(Double.valueOf(distanceInMeters), time);
+                RunningLogArray.add(log);
+
+                saveItemsToDatabase();
                 break;
 
             default:
@@ -280,4 +351,51 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     }
 
 
+    @Override
+    public void onTaskDone(Object... values) {
+        if(currentPolyline != null){
+            currentPolyline.remove();
+        } else{
+            currentPolyline = mMap.addPolyline((PolylineOptions)values[0]);
+        }
+    }
+
+    private void readItemsFromDatabase(){
+        try {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    List<RunningLog> itemsFromDB = runningLogDao.listAll();
+                    RunningLogArray = new ArrayList<LogItem>();
+                    if (itemsFromDB != null & itemsFromDB.size() > 0) {
+                        for (RunningLog item : itemsFromDB) {
+                            RunningLogArray.add(item.getRunningLogItem());
+
+                            Log.i("SQLite read item", "Distance: " + item.getDistance() + "Time: " + item.getTime());
+                        }
+                    }
+                    return null;
+                }
+            }.execute().get();
+        }
+        catch(Exception ex) {
+            Log.e("readItemsFromDatabase", ex.getStackTrace().toString());
+        }
+    }
+
+    public void saveItemsToDatabase(){
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                runningLogDao.deleteAll();
+
+                for (LogItem l : RunningLogArray) {
+                    Log.i("get pace test: ", l.getPace().toString());
+                    RunningLog item = new RunningLog(l.getDistance(),l.getTime(),l.getPace(),l.getDate(),l.getSpeed());
+                    runningLogDao.insert(item);
+                }
+                return null;
+            }
+        }.execute();
+    }
 }
