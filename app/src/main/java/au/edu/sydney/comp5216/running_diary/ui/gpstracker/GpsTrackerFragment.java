@@ -58,7 +58,6 @@ import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, LocationListener,View.OnClickListener, TaskLoadedCallback {
-    private GpsTrackerViewModel gpsTrackerViewModel;
     public static GoogleMap mMap;
     LocationManager locationManager;
     MarkerOptions mo;
@@ -90,8 +89,6 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        gpsTrackerViewModel =
-                ViewModelProviders.of(this).get(GpsTrackerViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gpstracker, null, false);
         context = getActivity();
 

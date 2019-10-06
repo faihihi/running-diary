@@ -12,8 +12,10 @@ public class LogItem {
     private Double speed; //km per hour
     private String date; //[yyyy-mm-dd]
 
+    private Date d_format;
+
     public LogItem(Double distance, String time){
-        this.distance = distance;
+        this.distance = Math.round(distance * 1000.0) / 1000.0;
         this.time = time;
         setPace();
         setSpeed();
@@ -44,12 +46,14 @@ public class LogItem {
     }
 
     private void setSpeed(){
-        this.speed = this.distance/(getTimeInSecond()/3600);
+        Double temp = this.distance/(getTimeInSecond()/3600);
+        this.speed = Math.round(temp * 1000.0) / 1000.0;
     }
 
     private void setDate(){
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
         Date d = new Date(System.currentTimeMillis());
+        this.d_format = d;
         String dstr = formatter.format(d);
         this.date = dstr;
     }
@@ -74,11 +78,29 @@ public class LogItem {
         return sec_result;
     }
 
+    public Double getSecond(String str){
+        String[] str_split = str.split(":");
+
+        Double hr, min, sec;
+        if(str_split.length == 3){
+            hr = Double.parseDouble(str_split[0]);
+            min = Double.parseDouble(str_split[1]);
+            sec = Double.parseDouble(str_split[2]);
+        } else{
+            hr = 0.0;
+            min = Double.parseDouble(str_split[0]);
+            sec = Double.parseDouble(str_split[1]);
+        }
+
+        return ((((hr * 60) + min) * 60) + sec);
+    }
+
     public Double getDistance() {return distance; }
     public Double getSpeed() {return speed; }
     public String getPace() {return pace; }
     public String getTime() {return time; }
     public String getDate() {return date; }
+    public Date getD_format() {return d_format;}
 
     protected Double getInteger(Double num){
         String doubleAsString = String.valueOf(num);
