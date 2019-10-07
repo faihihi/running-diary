@@ -5,13 +5,20 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/logDate"
+        android:id="@+id/logTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:textSize="8pt"
+        android:text="Title" />
+    <TextView
+        android:id="@+id/logDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingBottom="10dp"
+        android:textSize="6pt"
         android:text="Date" />
 
     <LinearLayout
@@ -26,26 +33,18 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/distance"
-                android:tint="@color/colorPrimary"
-                android:textAlignment="center" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Distance (KM)"/>
             <TextView
                 android:id="@+id/logDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="8pt"
+                android:textSize="7pt"
                 android:textStyle="bold"
                 android:text="Distance" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="km"/>
 
         </LinearLayout>
 
@@ -55,26 +54,18 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/passage_of_time"
-                android:tint="@color/colorPrimary"
-                android:textAlignment="center" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Time (sec)"/>
             <TextView
                 android:id="@+id/logTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="8pt"
+                android:textSize="7pt"
                 android:textStyle="bold"
                 android:text="Time" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="sec"/>
 
         </LinearLayout>
 
@@ -84,26 +75,18 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/runer_silhouette_running_fast"
-                android:tint="@color/colorPrimary"
-                android:textAlignment="center" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Pace (hr/km)"/>
             <TextView
                 android:id="@+id/logPace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="8pt"
+                android:textSize="7pt"
                 android:textStyle="bold"
                 android:text="Pace" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="hr/km"/>
 
         </LinearLayout>
 
@@ -113,29 +96,19 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/speedometer"
-                android:tint="@color/colorPrimary"
-                android:textAlignment="center" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Speed (km/hr)"/>
             <TextView
                 android:id="@+id/logSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textSize="8pt"
+                android:textSize="7pt"
                 android:textStyle="bold"
                 android:text="Speed" />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="km/hr"/>
         </LinearLayout>
-
     </LinearLayout>
 
 

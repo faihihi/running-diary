@@ -16,24 +16,27 @@ public class LogItem {
     private String date; //[yyyy-mm-dd]
 
     private Date d_format;
+    private String title;
 
     public LogItem(){}
 
-    public LogItem(Double distance, String time){
+    public LogItem(Double distance, String time, String title){
         this.distance = Math.round(distance * 1000.0) / 1000.0;
         this.time = time;
         setPace();
         setSpeed();
         setDate();
+        this.title = title;
     }
 
-    public LogItem(Double distance, String time, String pace, Double speed, String date){
+    public LogItem(Double distance, String time, String pace, Double speed, String date, String title){
         this.distance = Math.round(distance * 1000.0) / 1000.0;
         this.time = time;
         this.pace = pace;
         this.speed = speed;
         this.date = date;
         setDFormat();
+        this.title = title;
     }
 
     private void setPace(){
@@ -54,7 +57,7 @@ public class LogItem {
     private void setDate(){
         Date d = new Date(System.currentTimeMillis());
         this.d_format = d;
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm");
         String dstr = formatter.format(d);
         this.date = dstr;
     }
@@ -121,6 +124,7 @@ public class LogItem {
     public String getTime() {return time; }
     public String getDate() {return date; }
     public Date getD_format() {return d_format;}
+    public String getTitle() {return title; }
 
     protected Double getInteger(Double num){
         String doubleAsString = String.valueOf(num);

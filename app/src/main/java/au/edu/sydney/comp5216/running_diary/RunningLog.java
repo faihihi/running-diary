@@ -25,17 +25,20 @@ public class RunningLog {
     private String date;
     @ColumnInfo(name = "runningLogSpeed")
     private Double speed;
+    @ColumnInfo(name = "runningLogTitle")
+    private String title;
 
-    public RunningLog(Double distance, String time, String pace, String date, Double speed){
+    public RunningLog(Double distance, String time, String pace, String date, Double speed, String title){
         this.distance = distance;
         this.time = time;
         this.pace = pace;
         this.date = date;
         this.speed = speed;
+        this.title = title;
     }
 
     public LogItem getRunningLogItem(){
-        LogItem newItem = new LogItem(this.distance, this.time, this.pace, this.speed, this.date);
+        LogItem newItem = new LogItem(this.distance, this.time, this.pace, this.speed, this.date, this.title);
         return newItem;
     }
 
@@ -63,6 +66,10 @@ public class RunningLog {
         return speed;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public void setRunningLogID(int runningLogID) {
         this.runningLogID = runningLogID;
     }
@@ -85,5 +92,9 @@ public class RunningLog {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

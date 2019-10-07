@@ -40,6 +40,7 @@ public class LogItemAdapter extends ArrayAdapter<LogItem> {
         TextView logTime = (TextView) convertView.findViewById(R.id.logTime);
         TextView logPace = (TextView) convertView.findViewById(R.id.logPace);
         TextView logSpeed = (TextView) convertView.findViewById(R.id.logSpeed);
+        TextView logTitle = (TextView) convertView.findViewById(R.id.logTitle);
 
         // Populate the data into the template view using the data object
         logDate.setText(item.getDate());
@@ -47,6 +48,7 @@ public class LogItemAdapter extends ArrayAdapter<LogItem> {
         logTime.setText(item.getTime());
         logPace.setText(item.getPace());
         logSpeed.setText(item.getSpeed().toString());
+        logTitle.setText(item.getTitle());
 
         // Return the completed view to render on screen
         return convertView;

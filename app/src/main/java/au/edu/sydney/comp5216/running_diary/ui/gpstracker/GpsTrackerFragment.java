@@ -15,12 +15,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +78,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     private boolean running;
     private long pauseOffset;
     Button start, stop, reset, getDirection, save;
+    private String runTitle = "";
 
     private ArrayList<LogItem> RunningLogArray;
 
@@ -209,14 +212,35 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 break;
 
             case R.id.save_btn:
-                String time = (String) chronometer.getText();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Title of your Run");
 
-                LogItem log = new LogItem(Double.valueOf(distanceInMeters), time);
-                RunningLogArray.add(log);
+                // Set up the input
+                final EditText input = new EditText(getContext());
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
 
-                saveItemsToDatabase();
-                Toast.makeText(getActivity(), "The record has been saved", Toast.LENGTH_LONG).show();
+                // Set up the buttons
+                builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        runTitle = input.getText().toString();
+                        String time = (String) chronometer.getText();
 
+                        LogItem log = new LogItem(Double.valueOf(distanceInMeters), time, runTitle);
+                        RunningLogArray.add(log);
+
+                        saveItemsToDatabase();
+                        Toast.makeText(getActivity(), "The record has been saved", Toast.LENGTH_LONG).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
                 break;
 
             default:
@@ -391,7 +415,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
 
                 for (LogItem l : RunningLogArray) {
                     Log.i("get pace test: ", l.getPace().toString());
-                    RunningLog item = new RunningLog(l.getDistance(),l.getTime(),l.getPace(),l.getDate(),l.getSpeed());
+                    RunningLog item = new RunningLog(l.getDistance(),l.getTime(),l.getPace(),l.getDate(),l.getSpeed(), l.getTitle());
                     runningLogDao.insert(item);
                 }
                 return null;
