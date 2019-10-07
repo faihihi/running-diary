@@ -183,6 +183,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
     }
 
     public void backToPlaylist(View view){
+        mPlayer.stop();
         finish();
     }
 }

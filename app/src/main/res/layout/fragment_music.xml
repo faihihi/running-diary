@@ -3,18 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingTop="20dp"
+    android:paddingRight="8dp">
 
     <TextView
-        android:id="@+id/music_text"
+        android:id="@+id/song_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Yo"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="20dp"
+        android:text="Songs"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
 
     <ListView
         android:id="@+id/songList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/song_text"
+        android:clipToPadding="false"
+        android:headerDividersEnabled="false">
 
     </ListView>
 </RelativeLayout>

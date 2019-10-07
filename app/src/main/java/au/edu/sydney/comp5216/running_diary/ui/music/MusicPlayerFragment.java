@@ -33,15 +33,11 @@ import au.edu.sydney.comp5216.running_diary.R;
 
 public class MusicPlayerFragment extends Fragment {
 
-    private MusicPlayerViewModel musicPlayerViewModel;
-
     private String[] itemsAll;
     private ListView songList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        musicPlayerViewModel =
-                ViewModelProviders.of(this).get(MusicPlayerViewModel.class);
         View root = inflater.inflate(R.layout.fragment_music, container, false);
 
 
@@ -95,7 +91,7 @@ public class MusicPlayerFragment extends Fragment {
         for(int songCounter = 0;songCounter < audioSongs.size(); songCounter++){
             itemsAll[songCounter] = audioSongs.get(songCounter).getName();
         }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.fragment_music, R.id.music_text, itemsAll);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.song_list, R.id.song_title, itemsAll);
         songList.setAdapter(arrayAdapter);
 
         songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
