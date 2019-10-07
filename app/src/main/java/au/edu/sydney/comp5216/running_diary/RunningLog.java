@@ -6,6 +6,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
 @Entity(tableName = "runninglog")
 public class RunningLog {
     @PrimaryKey(autoGenerate = true)
@@ -33,7 +35,7 @@ public class RunningLog {
     }
 
     public LogItem getRunningLogItem(){
-        LogItem newItem = new LogItem(this.distance,this.time);
+        LogItem newItem = new LogItem(this.distance, this.time, this.pace, this.speed, this.date);
         return newItem;
     }
 

@@ -75,8 +75,8 @@ public class RunningLogFragment extends Fragment {
             if(isDateInCurrentWeek(item.getD_format())){
                 Log.d("Check if any date is in this week", "YESSS");
                 distance_sum = distance_sum + item.getDistance();
-                time_sum = time_sum + item.getSecond(item.getTime());
-                pace_sum = pace_sum + item.getSecond(item.getPace());
+                time_sum = time_sum + item.getTimeInSecond(item.getTime());
+                pace_sum = pace_sum + item.getTimeInSecond(item.getPace());
                 speed_sum = speed_sum + item.getSpeed();
                 count++;
             }
@@ -85,13 +85,15 @@ public class RunningLogFragment extends Fragment {
         if(count == 0){ count = 1;}
 
         Double distance_avg = distance_sum/count;
-        Double time_avg = time_sum/count;
-        Double pace_avg = pace_sum/count;
+
+        LogItem i = new LogItem();
+        String time_avg = i.convertSecToHr(time_sum/count);
+        String pace_avg = i.convertSecToHr(pace_sum/count);
         Double speed_avg = speed_sum/count;
 
         dv.setText(reduceDecimal(distance_avg).toString());
-        tv.setText(reduceDecimal(time_avg).toString());
-        pv.setText(reduceDecimal(pace_avg).toString());
+        tv.setText(time_avg);
+        pv.setText(pace_avg);
         sv.setText(reduceDecimal(speed_avg).toString());
     }
 

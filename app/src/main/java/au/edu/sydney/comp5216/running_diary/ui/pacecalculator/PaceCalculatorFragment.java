@@ -58,6 +58,7 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
         sec = Double.parseDouble(sec_input.getText().toString());
         dist = Double.parseDouble(distance.getText().toString());
 
+
         Double hr_ans = 0.0, min_ans = 0.0, sec_ans = 0.0;
 
         if(hr <= 59 && min <= 59 && sec <= 59 && dist > 0){
@@ -83,9 +84,17 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
             return;
         }
 
-        hour_result.setText(String.valueOf((int) Math.floor(hr_ans)));
-        min_result.setText(String.valueOf((int) Math.floor(min_ans)));
-        sec_result.setText(String.valueOf((int) Math.round(sec_ans)));
+        String hr_str = String.valueOf((int) Math.floor(hr_ans));
+        String min_str = String.valueOf((int) Math.floor(min_ans));
+        String sec_str = String.valueOf((int) Math.round(sec_ans));
+
+        if(hr_str.length() == 1){hr_str = "0" + hr_str;}
+        if(min_str.length() == 1){min_str = "0" + min_str;}
+        if(sec_str.length() == 1){sec_str = "0" + sec_str;}
+
+        hour_result.setText(hr_str);
+        min_result.setText(min_str);
+        sec_result.setText(sec_str);
 
         pace_text.setVisibility(View.VISIBLE);
         pace_result.setVisibility(View.VISIBLE);

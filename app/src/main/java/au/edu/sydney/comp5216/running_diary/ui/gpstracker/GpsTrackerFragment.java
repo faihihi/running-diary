@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -214,6 +215,8 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 RunningLogArray.add(log);
 
                 saveItemsToDatabase();
+                Toast.makeText(getActivity(), "The record has been saved", Toast.LENGTH_LONG).show();
+
                 break;
 
             default:
