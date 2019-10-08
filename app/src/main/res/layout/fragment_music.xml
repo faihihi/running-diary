@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="20dp"
-        android:text="Songs"
+        android:text="Playlist"
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold" />

@@ -1,12 +1,15 @@
 package au.edu.sydney.comp5216.running_diary.ui.gpstracker;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -43,6 +47,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,18 +72,18 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     Marker marker;
     boolean previousLocation, reset_check, pause_check;
     Location loc1, loc2;
-    Double initial_lat, initial_lng;
     float distanceInMeters, paused_distance;
     TextView distance_view;
+    EditText search_location;
 
     public static Polyline currentPolyline;
-    MarkerOptions place1, place2;
 
     private Chronometer chronometer;
     private boolean running;
     private long pauseOffset;
-    Button start, stop, reset, getDirection, save;
+    Button start, stop, reset, getDirection, save, search;
     private String runTitle = "";
+    LatLng myCoordinates, address_latLng;
 
     private ArrayList<LogItem> RunningLogArray;
 
@@ -119,14 +124,17 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         stop = (Button) root.findViewById(R.id.stop_btn);
         reset = (Button) root.findViewById(R.id.reset_btn);
         save = (Button) root.findViewById(R.id.save_btn);
+        search = (Button) root.findViewById(R.id.search_btn);
 
         getDirection.setOnClickListener(this);
         start.setOnClickListener(this);
         stop.setOnClickListener(this);
         reset.setOnClickListener(this);
         save.setOnClickListener(this);
+        search.setOnClickListener(this);
 
         distance_view = (TextView) root.findViewById(R.id.distance_view);
+        search_location = (EditText) root.findViewById(R.id.search_location);
 
         chronometer = (Chronometer) root.findViewById(R.id.chronometer);
 
@@ -162,7 +170,6 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         switch (view.getId()){
             case R.id.start_btn:
                 if(!running){
-                    Log.d("Start btn","CLICKEDDDD");
                     chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                     chronometer.start();
                     running = true;
@@ -200,15 +207,40 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 reset_check = true;
                 break;
 
+            case R.id.search_btn:
+                String loc = search_location.getText().toString();
+                List<Address> addressList = new ArrayList<>();
+
+                if(loc != null || loc.equals("")){
+                    Geocoder geocoder = new Geocoder(getContext());
+                    try {
+                        addressList = geocoder.getFromLocationName(loc, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_LONG).show();
+                    break;
+                }
+
+                hideKeyboard();
+                Address address = addressList.get(0);
+                address_latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                marker.setPosition(address_latLng);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address_latLng, 15));
+                break;
+
             case R.id.direction_btn:
-                Log.d("Check if clicked","CLICKEDDDDD");
+                if(address_latLng != null){
+                    MarkerOptions place1 = new MarkerOptions().position(myCoordinates);
+                    MarkerOptions place2 = new MarkerOptions().position(address_latLng);
 
-                place1 = new MarkerOptions().position(new LatLng(-33.8918,151.189)).title("Location 1");
-                place2 = new MarkerOptions().position(new LatLng(-33.8834,151.194)).title("Location 2");
+                    String url = getUrl(place1.getPosition(), place2.getPosition(), "driving");
+                    new FetchURL(getContext()).execute(url, "driving");
+                }
 
-                String url2 = getUrl(place1.getPosition(), place2.getPosition(), "driving");
-                Log.d("GET URL",url2);
-                new FetchURL(getContext()).execute(url2, "driving");
+
                 break;
 
             case R.id.save_btn:
@@ -262,13 +294,9 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         mMap = googleMap;
         marker = mMap.addMarker(mo);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        float zoomLevel = 16.0f; //This goes up to 21
-
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, zoomLevel));
+        mMap.setMyLocationEnabled(true);
+        marker.setPosition(new LatLng(-33.8918, 151.189));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     @Override
@@ -294,8 +322,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             }
         }
 
-        LatLng myCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
-        marker.setPosition(myCoordinates);
+        myCoordinates = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myCoordinates));
     }
 
@@ -382,6 +409,11 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         } else{
             currentPolyline = mMap.addPolyline((PolylineOptions)values[0]);
         }
+    }
+
+    public void hideKeyboard() {
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
     private void readItemsFromDatabase(){
