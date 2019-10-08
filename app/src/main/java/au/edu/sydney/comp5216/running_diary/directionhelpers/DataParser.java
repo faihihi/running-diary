@@ -11,11 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Direction helper method for parsing data
  * Created by Vishal on 10/20/2018.
  * Courtesy : https://github.com/Vysh01/android-maps-directions/tree/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers
  */
 
 public class DataParser {
+
+    /**
+     * Parse json object to route in list of hashmap format
+     * @param jObject JSONObject
+     * @return routes
+     */
     public List<List<HashMap<String, String>>> parse(JSONObject jObject) {
 
         List<List<HashMap<String, String>>> routes = new ArrayList<>();
@@ -60,6 +67,8 @@ public class DataParser {
 
     /**
      * Method to decode polyline points
+     * @param encoded
+     * @return polyline points
      * Courtesy : https://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
      */
     private List<LatLng> decodePoly(String encoded) {

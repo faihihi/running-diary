@@ -15,20 +15,24 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Points parser method
  * Created by Vishal on 10/20/2018.
  * Courtesy : https://github.com/Vysh01/android-maps-directions/tree/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers
  */
-
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
     TaskLoadedCallback taskCallback;
-    String directionMode = "driving";
+    String directionMode = "walking";
 
     public PointsParser(Context mContext, String directionMode) {
         this.taskCallback = (TaskLoadedCallback) mContext;
         this.directionMode = directionMode;
     }
 
-    // Parsing the data in non-ui thread
+    /**
+     * Parsing the data in non-ui thread
+     * @param jsonData
+     * @return routes
+     */
     @Override
     protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
 
@@ -53,7 +57,10 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
         return routes;
     }
 
-    // Executes in UI thread, after the parsing process
+    /**
+     * Executes in UI thread, after the parsing process
+     * @param result
+     */
     @Override
     protected void onPostExecute(List<List<HashMap<String, String>>> result) {
         ArrayList<LatLng> points;

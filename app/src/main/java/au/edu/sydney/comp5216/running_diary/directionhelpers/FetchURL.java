@@ -12,18 +12,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
+ * Direction Helper method for calling API and fetch URL
  * Created by Vishal on 10/20/2018.
  * Courtesy : https://github.com/Vysh01/android-maps-directions/tree/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers
  */
-
 public class FetchURL extends AsyncTask<String, Void, String> {
     Context mContext;
-    String directionMode = "driving";
+    String directionMode = "walking";
 
+    /**
+     * Constructor of FetchURL class
+     * @param mContext
+     */
     public FetchURL(Context mContext) {
         this.mContext = mContext;
     }
 
+    /**
+     * Method for getting data
+     * @param strings
+     * @return data string
+     */
     @Override
     protected String doInBackground(String... strings) {
         // For storing data from web service
@@ -39,6 +48,10 @@ public class FetchURL extends AsyncTask<String, Void, String> {
         return data;
     }
 
+    /**
+     * Method for executing parser task
+     * @param s string
+     */
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
@@ -47,6 +60,12 @@ public class FetchURL extends AsyncTask<String, Void, String> {
         parserTask.execute(s);
     }
 
+    /**
+     * Method for downloading url
+     * @param strUrl
+     * @return data in string
+     * @throws IOException
+     */
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
