@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -27,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +83,8 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     private Chronometer chronometer;
     private boolean running;
     private long pauseOffset;
-    Button start, stop, reset, getDirection, save, search;
+    Button start, reset, save;
+    ImageView getDirection, search;
     private String runTitle = "";
     LatLng myCoordinates, address_latLng;
 
@@ -119,16 +122,16 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             showAlert(1);
         }
 
-        getDirection = (Button) root.findViewById(R.id.direction_btn);
+
         start = (Button) root.findViewById(R.id.start_btn);
-        stop = (Button) root.findViewById(R.id.stop_btn);
         reset = (Button) root.findViewById(R.id.reset_btn);
         save = (Button) root.findViewById(R.id.save_btn);
-        search = (Button) root.findViewById(R.id.search_btn);
+
+        search = (ImageView) root.findViewById(R.id.search_btn);
+        getDirection = (ImageView) root.findViewById(R.id.direction_btn);
 
         getDirection.setOnClickListener(this);
         start.setOnClickListener(this);
-        stop.setOnClickListener(this);
         reset.setOnClickListener(this);
         save.setOnClickListener(this);
         search.setOnClickListener(this);
@@ -170,6 +173,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         switch (view.getId()){
             case R.id.start_btn:
                 if(!running){
+                    start.setText("Pause");
                     chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
                     chronometer.start();
                     running = true;
@@ -183,10 +187,8 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                     paused_distance = 0;
                     pause_check = false;
                 }
-                break;
-
-            case R.id.stop_btn:
-                if(running){
+                else{
+                    start.setText("Start");
                     chronometer.stop();
                     pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
                     running = false;
@@ -295,7 +297,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         marker = mMap.addMarker(mo);
 
         mMap.setMyLocationEnabled(true);
-        marker.setPosition(new LatLng(-33.8918, 151.189));
+        marker.setPosition(new LatLng(-33.8897, 151.19));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15));
     }
 
@@ -374,7 +376,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             title = "Enable Location";
             btnText = "Location Settings";
         } else{
-            message = "Please alow this app to access location";
+            message = "Please allow this app to access location";
             title = "Permission access";
             btnText = "Grant";
         }

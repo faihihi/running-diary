@@ -74,74 +74,113 @@
             android:textAlignment="center" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/pace_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        android:text="Pace" />
 
     <LinearLayout
         android:id="@+id/pace_result"
-        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="20dp"
         android:orientation="horizontal"
-        android:paddingTop="25dp">
+        android:paddingTop="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/pace_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="15dp"
+            android:text="PACE"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/hour_pace"
-            android:layout_width="85dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:hint="hh"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
 
         <TextView
-            android:layout_width="20dp"
+            android:layout_width="10dp"
             android:layout_height="wrap_content"
             android:text=":"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/min_pace"
-            android:layout_width="85dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:hint="mm"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
 
         <TextView
-            android:layout_width="20dp"
+            android:layout_width="10dp"
             android:layout_height="wrap_content"
             android:text=":"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/sec_pace"
-            android:layout_width="85dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:hint="ss"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
 
         <TextView
-            android:layout_width="85dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:hint="per km"
-            android:textSize="20sp"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
-            android:textAlignment="center" />
+            android:textSize="20sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/speed_result"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/speed_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="15dp"
+            android:text="SPEED"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/speed_result_txt"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:hint="speed"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:hint="km/hr"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
     </LinearLayout>
 
 

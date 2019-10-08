@@ -1,10 +1,12 @@
 package au.edu.sydney.comp5216.running_diary.ui.pacecalculator;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,8 +22,8 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
 
     EditText hour_input, min_input, sec_input, distance;
     Double hr, min, sec, dist;
-    TextView hour_result, min_result, sec_result, pace_text;
-    LinearLayout pace_result;
+    TextView hour_result, min_result, sec_result, speed_result_txt;
+    LinearLayout pace_result, speed_result;
     Button calculatePace;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -36,9 +38,10 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
         hour_result = (TextView) root.findViewById(R.id.hour_pace);
         min_result = (TextView) root.findViewById(R.id.min_pace);
         sec_result = (TextView) root.findViewById(R.id.sec_pace);
-        pace_text = (TextView) root.findViewById(R.id.pace_text);
+        speed_result_txt = (TextView) root.findViewById(R.id.speed_result_txt);
 
         pace_result = (LinearLayout) root.findViewById(R.id.pace_result);
+        speed_result = (LinearLayout) root.findViewById(R.id.speed_result);
 
         calculatePace = (Button) root.findViewById(R.id.calculate_pace);
         calculatePace.setOnClickListener(this);
@@ -53,6 +56,8 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
             return;
         }
 
+        hideKeyboard();
+
         hr = Double.parseDouble(hour_input.getText().toString());
         min = Double.parseDouble(min_input.getText().toString());
         sec = Double.parseDouble(sec_input.getText().toString());
@@ -60,8 +65,12 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
 
 
         Double hr_ans = 0.0, min_ans = 0.0, sec_ans = 0.0;
+        String speed_txt = "";
 
         if(hr <= 59 && min <= 59 && sec <= 59 && dist > 0){
+            Double speed_temp = dist/(((((hr * 60) + min) * 60) + sec)/3600);
+            speed_txt = String.valueOf(Math.round(speed_temp * 1000.0) / 1000.0);
+
             Double sec_result = (Double) ((((hr * 60) + min) * 60) + sec) / dist;
             Log.d("Check sec_result", sec_result.toString());
 
@@ -95,9 +104,10 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
         hour_result.setText(hr_str);
         min_result.setText(min_str);
         sec_result.setText(sec_str);
+        speed_result_txt.setText(speed_txt);
 
-        pace_text.setVisibility(View.VISIBLE);
         pace_result.setVisibility(View.VISIBLE);
+        speed_result.setVisibility(View.VISIBLE);
     }
 
 
@@ -110,5 +120,10 @@ public class PaceCalculatorFragment extends Fragment implements View.OnClickList
 
     private boolean isEmpty(EditText etText) {
         return etText.getText().toString().trim().length() == 0;
+    }
+
+    public void hideKeyboard() {
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 }
