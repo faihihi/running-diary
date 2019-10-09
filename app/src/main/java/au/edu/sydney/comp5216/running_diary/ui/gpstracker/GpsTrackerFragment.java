@@ -312,7 +312,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
 
                         // Create running log item from distance, time, and title, and add to list
                         LogItem log = new LogItem(Double.valueOf(distanceInMeters), time, runTitle);
-                        RunningLogArray.add(log);
+                        RunningLogArray.add(0, log);
 
                         // Save list to database and display toast
                         saveItemsToDatabase();
