@@ -431,25 +431,30 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     }
 
     /**
-     * Check if location provider (GPS and Network) is enabled
+     * Check if location provider (GPS or Network) is enabled
      * @return boolean
      */
     private boolean isLocationEnabled(){
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-    
+    /**
+     * Check if permission to access location has been granted
+     * @return boolean
+     */
     private boolean isPermissionGranted(){
         if(checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            Log.v("myLOGGGG", "Permission is GRANTED");
             return true;
         } else{
-            Log.v("myLOGGGG","Permission is NOT GRANTED");
             return false;
         }
     }
 
+    /**
+     * Show dialog alert for user to change location setting
+     * @param status
+     */
     private void showAlert(final int status){
         String message, title, btnText;
         if(status == PERMISSION_ALL){
@@ -462,21 +467,33 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
             btnText = "Grant";
         }
 
+        // Setup alert dialog
         final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setCancelable(false);
         dialog.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(btnText, new DialogInterface.OnClickListener() {
+                    /**
+                     * When user agree to grant permission
+                     * @param dialog
+                     * @param id
+                     */
                     public void onClick(DialogInterface dialog, int id) {
+                        // Start new activity to location setting
                         if(status == PERMISSION_ALL){
                             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivity(intent);
-                        } else{
+                        } else{ // Request permission
                             requestPermissions(PERMISSIONS, PERMISSION_ALL);
                         }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+                    /**
+                     * When click cancel, close dialog
+                     * @param dialog
+                     * @param id
+                     */
                     public void onClick(DialogInterface dialog, int id){
                         getActivity().finish();
                     }
@@ -485,6 +502,11 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
     }
 
 
+    /**
+     * Method from TaskLoadedCallback interface
+     * Add polyline of route to map
+     * @param values
+     */
     @Override
     public void onTaskDone(Object... values) {
         if(currentPolyline != null){
@@ -494,14 +516,25 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         }
     }
 
+    /**
+     * Hide keyboard
+     */
     public void hideKeyboard() {
         final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
+    /**
+     * Read item from database
+     */
     private void readItemsFromDatabase(){
         try {
             new AsyncTask<Void, Void, Void>() {
+                /**
+                 * Get running log items from database and add to RunningLogArray list
+                 * @param voids
+                 * @return void
+                 */
                 @Override
                 protected Void doInBackground(Void... voids) {
                     List<RunningLog> itemsFromDB = runningLogDao.listAll();
@@ -509,8 +542,6 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                     if (itemsFromDB != null & itemsFromDB.size() > 0) {
                         for (RunningLog item : itemsFromDB) {
                             RunningLogArray.add(item.getRunningLogItem());
-
-                            Log.i("SQLite read item", "Distance: " + item.getDistance() + "Time: " + item.getTime());
                         }
                     }
                     return null;
@@ -522,14 +553,22 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
         }
     }
 
+    /**
+     * Save items to database
+     */
     public void saveItemsToDatabase(){
         new AsyncTask<Void, Void, Void>() {
+            /**
+             * Delete all items and
+             * Insert all items from RunningLogArray list to database
+             * @param voids
+             * @return
+             */
             @Override
             protected Void doInBackground(Void... voids) {
                 runningLogDao.deleteAll();
 
                 for (LogItem l : RunningLogArray) {
-                    Log.i("get pace test: ", l.getPace().toString());
                     RunningLog item = new RunningLog(l.getDistance(),l.getTime(),l.getPace(),l.getDate(),l.getSpeed(), l.getTitle());
                     runningLogDao.insert(item);
                 }
