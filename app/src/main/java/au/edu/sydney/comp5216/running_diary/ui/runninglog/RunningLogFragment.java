@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +74,7 @@ public class RunningLogFragment extends Fragment implements View.OnClickListener
         prev_week = (Button) root.findViewById(R.id.prev_week_btn);
         next_week = (Button) root.findViewById(R.id.next_week_btn);
 
+        // Set onClickListener
         prev_week.setOnClickListener(this);
         next_week.setOnClickListener(this);
 
@@ -87,18 +87,25 @@ public class RunningLogFragment extends Fragment implements View.OnClickListener
         return root;
     }
 
+    /**
+     * Set onclick listener for previous and next button
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            // When previous button is clicked
             case R.id.prev_week_btn:
-                if(cur){
+                if(cur){ // If displaying current week average
+                    // Get previous week average and set text
                     getWeeklyAvg("previous");
                     next_week.setVisibility(View.VISIBLE);
                     avg_title.setText("Last Week Average");
 
                     cur = false;
                     prev = true;
-                } else if(prev){
+                } else if(prev){ // If displaying previous week average
+                    // Get last two week average and set text
                     getWeeklyAvg("previous2");
                     prev_week.setVisibility(View.INVISIBLE);
                     avg_title.setText("Last 2 Week Average");
@@ -108,16 +115,19 @@ public class RunningLogFragment extends Fragment implements View.OnClickListener
                 }
                 break;
 
+            // When next button is clicked
             case R.id.next_week_btn:
-                if(prev){
+                if(prev){ // If displaying previous week average
+                    // Get current week average and set text
                     getWeeklyAvg("current");
                     next_week.setVisibility(View.INVISIBLE);
                     avg_title.setText("This Week Average");
 
                     prev = false;
                     cur = true;
-                } else if(prev2){
-                    getWeeklyAvg("previous2");
+                } else if(prev2){ // If displaying previous two week average
+                    // Get previous week average and set text
+                    getWeeklyAvg("previous");
                     prev_week.setVisibility(View.VISIBLE);
                     avg_title.setText("Last Week Average");
 
