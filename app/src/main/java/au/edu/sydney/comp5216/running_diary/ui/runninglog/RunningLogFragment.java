@@ -7,13 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,13 +31,16 @@ import au.edu.sydney.comp5216.running_diary.RunningLogDao;
 /**
  * RunningLogFragment starts when Running Log navigation is clicked
  */
-public class RunningLogFragment extends Fragment {
+public class RunningLogFragment extends Fragment implements View.OnClickListener {
 
     // Set variables
     private ArrayList<LogItem> RunningLogArray;
     ArrayAdapter<LogItem> itemsAdapter;
 
-    TextView dv, tv, pv, sv;
+    TextView dv, tv, pv, sv, avg_title;
+    Button prev_week, next_week;
+
+    private boolean prev, cur, prev2;
 
     RunningLogDB db;
     RunningLogDao runningLogDao;
@@ -64,18 +70,71 @@ public class RunningLogFragment extends Fragment {
         tv = (TextView) root.findViewById(R.id.logTimeAvg);
         pv = (TextView) root.findViewById(R.id.logPaceAvg);
         sv = (TextView) root.findViewById(R.id.logSpeedAvg);
+        avg_title = (TextView) root.findViewById(R.id.weeklyavg_text);
+
+        prev_week = (Button) root.findViewById(R.id.prev_week_btn);
+        next_week = (Button) root.findViewById(R.id.next_week_btn);
+
+        prev_week.setOnClickListener(this);
+        next_week.setOnClickListener(this);
 
         // Get weekly average and display
-        getWeeklyAvg();
+        getWeeklyAvg("current");
+        prev = false;
+        cur = true;
+        prev2 = false;
 
         return root;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.prev_week_btn:
+                if(cur){
+                    getWeeklyAvg("previous");
+                    next_week.setVisibility(View.VISIBLE);
+                    avg_title.setText("Last Week Average");
+
+                    cur = false;
+                    prev = true;
+                } else if(prev){
+                    getWeeklyAvg("previous2");
+                    prev_week.setVisibility(View.INVISIBLE);
+                    avg_title.setText("Last 2 Week Average");
+
+                    prev2 = true;
+                    prev = false;
+                }
+                break;
+
+            case R.id.next_week_btn:
+                if(prev){
+                    getWeeklyAvg("current");
+                    next_week.setVisibility(View.INVISIBLE);
+                    avg_title.setText("This Week Average");
+
+                    prev = false;
+                    cur = true;
+                } else if(prev2){
+                    getWeeklyAvg("previous2");
+                    prev_week.setVisibility(View.VISIBLE);
+                    avg_title.setText("Last Week Average");
+
+                    prev = true;
+                    prev2 = false;
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
      * Calculate weekly average from all running logs
      * Display results
      */
-    private void getWeeklyAvg(){
+    private void getWeeklyAvg(String checkWeek){
         Double distance_sum = 0.0;
         Double time_sum = 0.0;
         Double pace_sum = 0.0;
@@ -85,7 +144,7 @@ public class RunningLogFragment extends Fragment {
 
         // Loop through log list and check if any log is recorded in the current week
         for (LogItem item : RunningLogArray) {
-            if(isDateInCurrentWeek(item.getD_format())){
+            if(isDateInWeek(item.getD_format(), checkWeek)){
                 // Sum up distance, time, pace, speed, of all logs recorded in current week
                 distance_sum = distance_sum + item.getDistance();
                 time_sum = time_sum + item.getTimeInSecond(item.getTime());
@@ -126,19 +185,47 @@ public class RunningLogFragment extends Fragment {
      * @return boolean
      */
     public static boolean isDateInCurrentWeek(Date date) {
-        // Get current week and year
-        Calendar currentCalendar = Calendar.getInstance();
-        int week = currentCalendar.get(Calendar.WEEK_OF_YEAR);
-        int year = currentCalendar.get(Calendar.YEAR);
+        CalendarItem calendarItem = new CalendarItem();
+        String[] currentWeek = calendarItem.getCurrentWeek();
 
-        // Set input week and year
-        Calendar targetCalendar = Calendar.getInstance();
-        targetCalendar.setTime(date);
-        int targetWeek = targetCalendar.get(Calendar.WEEK_OF_YEAR);
-        int targetYear = targetCalendar.get(Calendar.YEAR);
+        SimpleDateFormat formatter= new SimpleDateFormat("M-dd");
+        String targetDate = formatter.format(date);
 
-        // Compare and return true if in the same week and year
-        return week == targetWeek && year == targetYear;
+        for(int i=0;i<currentWeek.length;i++){
+            if(currentWeek[i].equals(targetDate)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if date is in the current/previous/next week
+     * @param date
+     * @return boolean
+     */
+    public static boolean isDateInWeek(Date date, String week) {
+        CalendarItem calendarItem = new CalendarItem();
+        String[] checkWeek = calendarItem.getCurrentWeek();
+        if(week.equals("current")){
+            checkWeek = calendarItem.getCurrentWeek();
+        } else if(week.equals("previous")){
+            checkWeek = calendarItem.getPreviousWeek();
+        } else if(week.equals("previous2")){
+            checkWeek = calendarItem.getPreviousTwoWeek();
+        }
+
+        Log.d("Check date", Arrays.toString(checkWeek));
+
+        SimpleDateFormat formatter= new SimpleDateFormat("M-dd");
+        String targetDate = formatter.format(date);
+
+        for(int i=0;i<checkWeek.length;i++){
+            if(checkWeek[i].equals(targetDate)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
