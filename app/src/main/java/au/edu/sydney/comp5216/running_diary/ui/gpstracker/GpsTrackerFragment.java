@@ -249,6 +249,7 @@ public class GpsTrackerFragment extends Fragment implements OnMapReadyCallback, 
                 if(loc != null || loc.equals("")){
                     Geocoder geocoder = new Geocoder(getContext());
                     try {
+                        Log.d("Run", "YESSSSS");
                         // Get address list from the location name using Geocoder
                         addressList = geocoder.getFromLocationName(loc, 1);
                     } catch (IOException e) {
