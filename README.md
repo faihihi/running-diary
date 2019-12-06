@@ -16,7 +16,7 @@ An Android mobile application that serves as a running diary for the user to fin
 <p align="center"><img src="./images/Calculator.png" height="500"></p>
 
 ### GPS Tracker
-Enter the destination, click search, and get direction. The route will then be displayed. User can tap Start to start the timer and the app will continuously calculate the distance traveled based on the previously collected location and current location of the user, accumulating the calculation of the distance in real-time. User can pause, resume, reset, or save the record to the running log with a title.
+Enter the destination, click search, and get direction. The route will then be displayed. User can tap Start to start the timer and the app will continuously calculate the distance traveled based on the previously collected location and current location of the user, accumulating the calculation of the distance in real-time. User can pause, resume, reset, or save the record of the run to the running log with a title. (number on the right side is distance in meter)
 <p align="center"><img src="./images/Map.png" height="500">  <img src="./images/GPS_tracker.png" height="500"></p>
 
 ### Running Log
